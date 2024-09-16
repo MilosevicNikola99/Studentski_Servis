@@ -38,11 +38,11 @@ class ExamBase(BaseModel):
 
 class ExamCreate(ExamBase):
     student_id: int
-    course_sifra: str
+    sifra_predmeta: str
 
 class Exam(ExamBase):
     student_id: int
-    course_sifra: str
+    sifra_predmeta: str
     datum: datetime
 
     class Config:

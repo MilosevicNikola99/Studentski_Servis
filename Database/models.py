@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, column
 from sqlalchemy.orm import relationship, Mapped
 from sqlalchemy.testing.schema import mapped_column
+from sqlalchemy import ForeignKeyConstraint
 
 from .database import Base
 
@@ -30,11 +31,16 @@ class Course(Base):
 class Exam(Base):
     __tablename__ = 'exam'
 
-    student_id : Mapped[int] = mapped_column(ForeignKey('student.id'), primary_key=True)
-    course_sifra : Mapped[str] = mapped_column(ForeignKey('course.sifra_predmeta'), primary_key=True)
+    student_id : Mapped[int] = mapped_column( primary_key=True)
+    sifra_predmeta : Mapped[str] = mapped_column(primary_key=True)
     datum : Mapped[datetime] = mapped_column(primary_key=True)
     ocena : Mapped[int]
     polozen : Mapped[bool]
+
+    __table_args__ = (
+        ForeignKeyConstraint(['student_id'], ['student.id'], name='fk_student_id'),
+        ForeignKeyConstraint(['sifra_predmeta'], ['course.sifra_predmeta'], name='fk_course_sifra_predmeta'),
+    )
 
     student = relationship("Student", back_populates="exams")
     course = relationship("Course", back_populates="exams")
