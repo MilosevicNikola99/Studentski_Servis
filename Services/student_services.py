@@ -1,10 +1,6 @@
 from fastapi import HTTPException
-
-from rich import status
 from sqlalchemy.orm import Session
 
-import Schemas
-from Database import models
 from Schemas import schemas
 from Repository import student_repository
 

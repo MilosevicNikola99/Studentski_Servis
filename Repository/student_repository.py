@@ -1,4 +1,4 @@
-from Tools.scripts.generate_sre_constants import sre_constants_header
+
 from sqlalchemy.orm import Session
 
 from Database import models
@@ -12,14 +12,14 @@ def create_student(db : Session,student : schemas.StudentCreate):
     return db_student
 
 def get_student_by_id(db : Session, student_id : int):
-    return db.query(models.Student).filter(models.Student.id == student_id).first()
+    return db.query(models.Student).filter(student_id == models.Student.id).first()
 
 
 def get_student_by_indeks(db : Session, indeks : str):
-    return db.query(models.Student).filter(models.Student.indeks == indeks).first()
+    return db.query(models.Student).filter(indeks == models.Student.indeks).first()
 
 def update_student(db : Session,up_student : schemas.Student):
-    student = db.query(models.Student).filter(models.Student.id == up_student.id).first()
+    student = db.query(models.Student).filter(up_student.id == models.Student.id).first()
     if student:
         student.ime = up_student.ime
         student.prezime = up_student.prezime
@@ -31,7 +31,7 @@ def update_student(db : Session,up_student : schemas.Student):
 
 
 def delete_student(db: Session, id : int):
-    student = db.query(models.Student).filter(models.Student.id == id).first()
+    student = db.query(models.Student).filter(id == models.Student.id).first()
     if student:
         db.delete(student)
         db.commit()

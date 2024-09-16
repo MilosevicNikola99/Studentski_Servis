@@ -25,7 +25,7 @@ class CourseCreate(CourseBase):
     pass
 
 class Course(CourseBase):
-    sifra_predemta : str
+    sifra_predmeta : str
 
     class Config:
         from_attributes = True
