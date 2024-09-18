@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from Database import models
-from Schemas import schemas
+from ..Database import models
+from ..Schemas import schemas
 
 def get_course_by_sifra(db : Session, sifra_predemta:str):
     return db.query(models.Course).filter(sifra_predemta == models.Course.sifra_predmeta).first()

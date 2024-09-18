@@ -4,22 +4,14 @@ from fastapi import FastAPI, Depends, HTTPException , APIRouter
 from sqlalchemy.orm import Session
 
 
-from Database import  models , database
-from Schemas import schemas
-from Services import  exam_services
-
+from ..Database import  models , database
+from ..Schemas import schemas
+from ..Services import  exam_services
+from ..dependencies import get_db
 
 models.Base.metadata.create_all(bind=database.engine)
 
 router = APIRouter()
-
-
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/exams/")
 def create_course(exam: schemas.ExamCreate , db : Session = Depends(get_db)):

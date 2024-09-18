@@ -3,8 +3,8 @@ from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
-from Database import models
-from Schemas import schemas
+from ..Database import models
+from ..Schemas import schemas
 
 def get_exam_by_sifra(db : Session, sifra_predemta:str):
     return db.query(models.Exam).filter(sifra_predemta == models.Exam.sifra_predmeta).first()
@@ -40,7 +40,7 @@ def delete_exam(db: Session,student_id: int ,sifra_predmeta : str , datum : date
             db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : delete exam failed')
         db.commit()
-        return {"Course deleted" : True}
+        return {"Exam deleted" : True}
     return None
 
 

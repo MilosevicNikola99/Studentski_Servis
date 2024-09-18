@@ -3,8 +3,8 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from Schemas import schemas
-from Repository import exam_repository
+from ..Schemas import schemas
+from ..Repository import exam_repository
 
 
 

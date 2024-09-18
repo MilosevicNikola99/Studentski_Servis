@@ -3,19 +3,14 @@ from sqlalchemy  import select
 from sqlalchemy.orm import Session
 from sqlalchemy import func , join
 from sqlalchemy.sql import and_
-from Routers import exams,students,courses
+from .Routers import exams,students,courses
 
-from Database import  models , database
-from Schemas import schemas
+from .Database import  models
+from .dependencies import get_db
 
 app = FastAPI()
 
-def get_db():
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 def get_sum_espb_for_student(db: Session, student_id: int) -> int:
     stmt = (

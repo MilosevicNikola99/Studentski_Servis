@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from Schemas import schemas
-from Repository import student_repository
+from ..Schemas import schemas
+from ..Repository import student_repository
 
 def create(db: Session ,student : schemas.StudentCreate):
     if student_repository.get_student_by_indeks(db,student.indeks):

@@ -2,8 +2,8 @@ from dns.rdtypes.IN.HTTPS import HTTPS
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from Database import models
-from Schemas import schemas
+from ..Database import models
+from ..Schemas import schemas
 
 def create_student(db : Session,student : schemas.StudentCreate):
     db_student = models.Student(ime=student.ime,prezime=student.prezime,indeks=student.indeks)
