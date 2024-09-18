@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException , APIRouter
 from sqlalchemy.orm import Session
 
 
@@ -9,7 +9,7 @@ from Services import  course_services
 
 models.Base.metadata.create_all(bind=database.engine)
 
-router = FastAPI()
+router = APIRouter()
 
 
 def get_db():

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException , APIRouter
 from sqlalchemy.orm import Session
 
 
@@ -11,7 +11,7 @@ from Services import  exam_services
 
 models.Base.metadata.create_all(bind=database.engine)
 
-router = FastAPI()
+router = APIRouter()
 
 
 def get_db():

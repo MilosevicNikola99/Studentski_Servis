@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from Database import models
@@ -9,15 +10,25 @@ def get_course_by_sifra(db : Session, sifra_predemta:str):
 
 def create_course(db: Session, course : schemas.Course):
     db_course = models.Course(sifra_predmeta=course.sifra_predmeta,naziv=course.naziv,espb=course.espb)
-    db.add(db_course)
+    try:
+        db.add(db_course)
+    except:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Course not created")
+
     db.commit()
     db.refresh(db_course)
+
     return db_course
 
 def delete_course(db: Session,sifra_predmeta : str):
     course = get_course_by_sifra(db,sifra_predmeta)
     if course:
-        db.delete(course)
+        try:
+            db.delete(course)
+        except:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Course not deleted")
         db.commit()
         return {"Course deleted" : True}
     return None
@@ -26,8 +37,13 @@ def delete_course(db: Session,sifra_predmeta : str):
 def update_course(db : Session, up_course : schemas.Course):
     course = db.query(models.Course).filter(up_course.sifra_predmeta == models.Course.sifra_predmeta).first()
     if course:
-        course.naziv = up_course.naziv
-        course.espb = up_course.espb
+        try:
+            course.naziv = up_course.naziv
+            course.espb = up_course.espb
+        except:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Course not updated")
+
         db.commit()
         db.refresh(course)
         return course
