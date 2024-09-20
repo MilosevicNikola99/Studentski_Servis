@@ -9,11 +9,12 @@ def create_student(db : Session,student : schemas.StudentCreate):
     db_student = models.Student(ime=student.ime,prezime=student.prezime,indeks=student.indeks)
     try:
         db.add(db_student)
+        db.commit()
     except:
         db.rollback()
         raise HTTPException(status_code=400, detail='Database Error : create student failed')
 
-    db.commit()
+
     db.refresh(db_student)
     return db_student
 
@@ -31,11 +32,11 @@ def update_student(db : Session,up_student : schemas.Student):
             student.ime = up_student.ime
             student.prezime = up_student.prezime
             student.indeks = up_student.indeks
+            db.commit()
         except:
             db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : update student failed')
 
-        db.commit()
         db.refresh(student)
         return student
     return None
@@ -46,6 +47,7 @@ def delete_student(db: Session, id : int):
     if student:
         try:
             db.delete(student)
+            db.commit()
         except:
             db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : delete student failed')

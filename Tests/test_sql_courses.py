@@ -36,6 +36,7 @@ def test_create_courses():
         json={
                 "naziv": "Programiranje1",
                 "espb": 6,
+                "profesor_id": 1,
                 "sifra_predmeta": "P120"
         } ,
     )
@@ -44,6 +45,7 @@ def test_create_courses():
     assert data["naziv"] == "Programiranje1"
     assert data["espb"] == 6
     assert data["sifra_predmeta"] == "P120"
+    assert data["profesor_id"] == 1
 
 
 def test_get_courses():
@@ -53,11 +55,13 @@ def test_get_courses():
     assert data["naziv"] == "Programiranje1"
     assert data["espb"] == 6
     assert data["sifra_predmeta"] == "P120"
+    assert data["profesor_id"] == 1
 
 def test_update_courses():
     response = client.put("/courses/P120", json={
                 "naziv": "Programiranje2",
                 "espb": 6,
+                "profesor_id": 1,
                 "sifra_predmeta": "P121"
         } )
     assert response.status_code == 200, response.text
@@ -65,6 +69,7 @@ def test_update_courses():
     assert data["naziv"] == "Programiranje2"
     assert data["espb"] == 6
     assert data["sifra_predmeta"] == "P120"
+    assert data["profesor_id"] == 1
 
 def test_delete_student():
     response = client.delete("/courses/P120")

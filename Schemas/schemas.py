@@ -3,6 +3,8 @@ from datetime import datetime
 from pydantic import BaseModel, conint
 
 
+
+
 class StudentBase(BaseModel):
     ime : str
     prezime : str
@@ -20,7 +22,7 @@ class Student(StudentBase):
 class CourseBase(BaseModel):
     naziv: str
     espb: int
-
+    profesor_id: int
 class CourseCreate(CourseBase):
     pass
 
@@ -44,6 +46,20 @@ class Exam(ExamBase):
     student_id: int
     sifra_predmeta: str
     datum: datetime
+
+    class Config:
+        from_attributes = True
+
+class ProfessorBase(BaseModel):
+        ime: str
+        prezime: str
+        departman: str
+
+class ProfessorCreate(ProfessorBase):
+    pass
+
+class Professor(ProfessorBase):
+    id: int
 
     class Config:
         from_attributes = True

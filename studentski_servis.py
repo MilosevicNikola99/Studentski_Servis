@@ -3,7 +3,7 @@ from sqlalchemy  import select
 from sqlalchemy.orm import Session
 from sqlalchemy import func , join
 from sqlalchemy.sql import and_
-from .Routers import exams,students,courses
+from .Routers import exams,students,courses,professors
 
 from .Database import  models
 from .dependencies import get_db
@@ -50,6 +50,7 @@ def count_passed_exams(db: Session, student_id: int):
 app.include_router(exams.router)
 app.include_router(students.router)
 app.include_router(courses.router)
+app.include_router(professors.router)
 
 @app.get("/statistics/{student_id}")
 async def statistics(student_id : int , db : Session = Depends(get_db)):

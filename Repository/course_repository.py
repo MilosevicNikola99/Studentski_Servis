@@ -9,7 +9,7 @@ def get_course_by_sifra(db : Session, sifra_predemta:str):
 
 
 def create_course(db: Session, course : schemas.Course):
-    db_course = models.Course(sifra_predmeta=course.sifra_predmeta,naziv=course.naziv,espb=course.espb)
+    db_course = models.Course(sifra_predmeta=course.sifra_predmeta,naziv=course.naziv,espb=course.espb, profesor_id=course.profesor_id)
     try:
         db.add(db_course)
     except:
@@ -40,6 +40,7 @@ def update_course(db : Session, up_course : schemas.Course):
         try:
             course.naziv = up_course.naziv
             course.espb = up_course.espb
+            course.profesor_id = up_course.profesor_id
         except:
             db.rollback()
             raise HTTPException(status_code=400, detail="Course not updated")

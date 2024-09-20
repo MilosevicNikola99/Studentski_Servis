@@ -27,7 +27,10 @@ class Course(Base):
     naziv : Mapped[str]
     espb : Mapped[int]
 
+    profesor_id : Mapped[int] = mapped_column(ForeignKey('professor.id'), nullable=False)
+
     exams : Mapped[List["Exam"]] = relationship("Exam", back_populates="course")
+    profesor : Mapped["Professor"] = relationship("Professor", back_populates="courses")
 
 class Exam(Base):
     __tablename__ = 'exam'
@@ -46,3 +49,12 @@ class Exam(Base):
     student = relationship("Student", back_populates="exams")
     course = relationship("Course", back_populates="exams")
 
+class Professor(Base):
+    __tablename__ = 'professor'
+
+    id : Mapped[int] = mapped_column( primary_key=True)
+    ime : Mapped[str]
+    prezime : Mapped[str]
+    departman : Mapped[str]
+
+    courses : Mapped[List["Course"]] = relationship("Course", back_populates="profesor")

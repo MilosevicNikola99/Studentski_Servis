@@ -26,13 +26,6 @@ def delete(db : Session,student_id:int , sifra_predmeta: str ,datum : datetime):
         raise HTTPException(status_code=404,detail="Course not found")
     return response
 
-# def get_by_sifra(db : Session, sifra_predmeta : str):
-#     course = exam_repository.get_course_by_sifra(db, sifra_predmeta)
-#     print(course)
-#     if course is None:
-#         raise HTTPException(status_code=404,detail="Course not found")
-#     return course
-
 
 def update(db : Session, exam : schemas.Exam):
     exam = exam_repository.update_exam(db, exam)
