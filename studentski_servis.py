@@ -3,7 +3,9 @@ from sqlalchemy  import select
 from sqlalchemy.orm import Session
 from sqlalchemy import func , join
 from sqlalchemy.sql import and_
-from .Routers import exams,students,courses,professors
+
+
+from .Routers import exams,students,courses,professors,enrollment
 
 from .Database import  models
 from .dependencies import get_db
@@ -51,6 +53,8 @@ app.include_router(exams.router)
 app.include_router(students.router)
 app.include_router(courses.router)
 app.include_router(professors.router)
+
+app.include_router(enrollment.router)
 
 @app.get("/statistics/{student_id}")
 async def statistics(student_id : int , db : Session = Depends(get_db)):

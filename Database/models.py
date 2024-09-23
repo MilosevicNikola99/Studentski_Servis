@@ -19,6 +19,7 @@ class Student(Base):
     indeks : Mapped[str] = mapped_column(unique=True, nullable=False)
 
     exams : Mapped[List["Exam"]] = relationship("Exam", back_populates="student")
+    enrollment = relationship("Enrollment", back_populates="student")
 
 class Course(Base):
     __tablename__ = 'course'
@@ -31,6 +32,7 @@ class Course(Base):
 
     exams : Mapped[List["Exam"]] = relationship("Exam", back_populates="course")
     profesor : Mapped["Professor"] = relationship("Professor", back_populates="courses")
+    enrollment = relationship("Enrollment", back_populates="course")
 
 class Exam(Base):
     __tablename__ = 'exam'
@@ -58,3 +60,18 @@ class Professor(Base):
     departman : Mapped[str]
 
     courses : Mapped[List["Course"]] = relationship("Course", back_populates="profesor")
+
+class Enrollment(Base):
+    __tablename__ = 'enrollment'
+
+    student_id : Mapped[int] = mapped_column( primary_key=True)
+    sifra_predmeta : Mapped[str] = mapped_column(primary_key=True)
+    datum_upisa: Mapped[datetime] = mapped_column(primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(['student_id'], ['student.id'], name='fk_student_id'),
+        ForeignKeyConstraint(['sifra_predmeta'], ['course.sifra_predmeta'], name='fk_course_sifra_predmeta'),
+    )
+
+    student = relationship("Student", back_populates="enrollment")
+    course = relationship("Course", back_populates="enrollment")

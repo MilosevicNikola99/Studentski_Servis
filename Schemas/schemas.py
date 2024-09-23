@@ -63,3 +63,16 @@ class Professor(ProfessorBase):
 
     class Config:
         from_attributes = True
+
+class EnrollmentBase(BaseModel):
+    student_id: int
+    sifra_predmeta: str
+    datum_upisa: datetime
+
+class EnrolmentCreate(EnrollmentBase):
+    pass
+
+class Enrollment(EnrollmentBase):
+
+    class Config:
+        from_attributes = True
