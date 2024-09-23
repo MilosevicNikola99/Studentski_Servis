@@ -1,28 +1,25 @@
-from fastapi import  Depends , APIRouter
-from sqlalchemy.orm import Session
+from fastapi import Depends, APIRouter
 
-
+from ..Services.professor_services import ProfessorService, get_professor_service
 from ..Database import  models , database
 from ..Schemas import schemas
-from ..Services import  professor_services
-from ..dependencies import get_db
 
 models.Base.metadata.create_all(bind=database.engine)
 
 router = APIRouter(prefix="/professors", tags=["professors"])
 
 @router.post("/")
-def create_professor(professor: schemas.ProfessorCreate , db : Session = Depends(get_db)):
-    return professor_services.create(db, professor)
+def create_professor(professor: schemas.ProfessorCreate ,professor_service : ProfessorService = Depends(get_professor_service)):
+    return professor_service.create( professor)
 
 @router.get("/{id}")
-def get_professor(id: int, db : Session = Depends(get_db)):
-    return professor_services.get_by_id(db, id)
+def get_professor(professor_id: int, professor_service : ProfessorService = Depends(get_professor_service)):
+    return professor_service.get_by_id(professor_id)
 
 @router.put("/{id}")
-def update_professor(id : int ,professor : schemas.ProfessorBase , db : Session = Depends(get_db)):
-    return professor_services.update(db, schemas.Professor(**professor.model_dump() ,id=id))
+def update_professor(professor_id : int ,professor : schemas.ProfessorBase ,professor_service : ProfessorService = Depends(get_professor_service) ):
+    return professor_service.update( schemas.Professor(**professor.model_dump() ,id=professor_id))
 
 @router.delete("/{id}")
-def delete_professor(id : int, db : Session = Depends(get_db)):
-    return professor_services.delete(db, id)
+def delete_professor(professor_id : int,professor_service : ProfessorService = Depends(get_professor_service)):
+    return professor_service.delete(professor_id)

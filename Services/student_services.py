@@ -1,30 +1,40 @@
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from fastapi import HTTPException, Depends
 
+
+from ..Repository.student_repository import StudentRepository,get_student_repository
 from ..Schemas import schemas
-from ..Repository import student_repository
 
-def create(db: Session ,student : schemas.StudentCreate):
-    if student_repository.get_student_by_indeks(db,student.indeks):
-        raise HTTPException(status_code=400,detail = "Student already exists")
-    return student_repository.create_student(db,student)
+def get_student_service(repo: StudentRepository = Depends(get_student_repository)):
+    return StudentService(repo)
 
-def get_by_id(db: Session ,id: int):
-    student = student_repository.get_student_by_id(db,id)
-    if student is None:
-        raise HTTPException(status_code = 404,detail = "Student not found")
+class StudentService:
 
-    return student
+    def __init__(self,repository : StudentRepository):
+        self.student_repository = repository
 
-def update(db:Session,student: schemas.Student):
-    student = student_repository.update_student(db,student)
-    if student is None:
-        raise HTTPException(status_code = 404 ,detail = "Student not found")
-    return student
+    def create(self,student : schemas.StudentCreate):
+        if self.student_repository.get_student_by_indeks(student.indeks):
+            raise HTTPException(status_code=400,detail = "Student already exists")
+        return self.student_repository.create_student(student)
+
+    def get_by_id(self,student_id: int):
+        student = self.student_repository.get_student_by_id(student_id)
+        if student is None:
+            raise HTTPException(status_code = 404,detail = "Student not found")
+
+        return student
+
+    def update(self,student: schemas.Student):
+        student = self.student_repository.update_student(student)
+        if student is None:
+            raise HTTPException(status_code = 404 ,detail = "Student not found")
+        return student
 
 
-def delete( db : Session,id):
-    response = student_repository.delete_student(db,id)
-    if response is None:
-        raise HTTPException(status_code = 404, detail = "Student not found")
-    return response
+    def delete(self,student_id : int):
+        response = self.student_repository.delete_student(student_id)
+        if response is None:
+            raise HTTPException(status_code = 404, detail = "Student not found")
+        return response
+
+

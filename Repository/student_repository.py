@@ -1,55 +1,63 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
-
+from fastapi import Depends
+from ..dependencies import get_db
+from ..Database import database
 from ..Database import models
 from ..Schemas import schemas
 
-def create_student(db : Session,student : schemas.StudentCreate):
-    db_student = models.Student(ime=student.ime,prezime=student.prezime,indeks=student.indeks)
-    try:
-        db.add(db_student)
-        db.commit()
-    except:
-        db.rollback()
-        raise HTTPException(status_code=400, detail='Database Error : create student failed')
+def get_student_repository(db: database.SessionLocal = Depends(get_db)):
+    return StudentRepository(db)
 
+class StudentRepository:
 
-    db.refresh(db_student)
-    return db_student
+    def __init__(self,db):
+        self.db = db
 
-def get_student_by_id(db : Session, student_id : int):
-    return db.query(models.Student).filter(student_id == models.Student.id).first()
-
-
-def get_student_by_indeks(db : Session, indeks : str):
-    return db.query(models.Student).filter(indeks == models.Student.indeks).first()
-
-def update_student(db : Session,up_student : schemas.Student):
-    student = db.query(models.Student).filter(up_student.id == models.Student.id).first()
-    if student:
+    def create_student(self,student : schemas.StudentCreate):
+        db_student = models.Student(ime=student.ime,prezime=student.prezime,indeks=student.indeks)
         try:
-            student.ime = up_student.ime
-            student.prezime = up_student.prezime
-            student.indeks = up_student.indeks
-            db.commit()
+            self.db.add(db_student)
+            self.db.commit()
         except:
-            db.rollback()
-            raise HTTPException(status_code=400, detail='Database Error : update student failed')
+            self.db.rollback()
+            raise HTTPException(status_code=400, detail='Database Error : create student failed')
 
-        db.refresh(student)
-        return student
-    return None
+        self.db.refresh(db_student)
+        return db_student
+
+    def get_student_by_id(self, student_id : int):
+        return self.db.query(models.Student).filter(student_id == models.Student.id).first()
 
 
-def delete_student(db: Session, id : int):
-    student = db.query(models.Student).filter(id == models.Student.id).first()
-    if student:
-        try:
-            db.delete(student)
-            db.commit()
-        except:
-            db.rollback()
-            raise HTTPException(status_code=400, detail='Database Error : delete student failed')
-        db.commit()
-        return {"Student deleted" : True}
-    return None
+    def get_student_by_indeks(self, indeks : str):
+        return self.db.query(models.Student).filter(indeks == models.Student.indeks).first()
+
+    def update_student(self,up_student : schemas.Student):
+        student = self.db.query(models.Student).filter(up_student.id == models.Student.id).first()
+        if student:
+            try:
+                student.ime = up_student.ime
+                student.prezime = up_student.prezime
+                student.indeks = up_student.indeks
+                self.db.commit()
+            except:
+                self.db.rollback()
+                raise HTTPException(status_code=400, detail='Database Error : update student failed')
+
+            self.db.refresh(student)
+            return student
+        return None
+
+
+    def delete_student(self, student_id : int):
+        student = self.db.query(models.Student).filter(student_id == models.Student.id).first()
+        if student:
+            try:
+                self.db.delete(student)
+                self.db.commit()
+            except:
+                self.db.rollback()
+                raise HTTPException(status_code=400, detail='Database Error : delete student failed')
+            self.db.commit()
+            return {"Student deleted" : True}
+        return None
