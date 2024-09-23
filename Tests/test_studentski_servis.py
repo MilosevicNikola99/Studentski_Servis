@@ -39,34 +39,39 @@ def test_statistics():
                     },
     )
     data = response.json()
+    assert "id" in data
     student_id = data["id"]
 
     client.post("/courses/",
                 json={
                         "naziv": "Programiranje1",
                         "espb": 6,
-                        "sifra_predmeta": "P120"
+                        "sifra_predmeta": "P120",
+                        "profesor_id" : 1
                 })
 
     client.post("/courses/",
                 json={
                     "naziv": "Programiranje2",
                     "espb": 6,
-                    "sifra_predmeta": "P121"
-                })
+                    "sifra_predmeta": "P121",
+                    "profesor_id": 1
+    })
 
     client.post("/courses/",
                 json={
                     "naziv": "Analiza1",
                     "espb": 6,
-                    "sifra_predmeta": "M101"
+                    "sifra_predmeta": "M101",
+                    "profesor_id": 1
                 })
 
     client.post("/courses/",
                 json={
                     "naziv": "Analiza2",
                     "espb": 6,
-                    "sifra_predmeta": "M102"
+                    "sifra_predmeta": "M102",
+                    "profesor_id": 1
                 })
     client.post("/exams/" , json={
                     "datum": "2024-09-19T07:38:46.871Z",
