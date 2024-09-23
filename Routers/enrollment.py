@@ -14,9 +14,9 @@ router = APIRouter(prefix="/enrollments", tags=["enrollments"])
 async def enrollment(enrollment: schemas.EnrolmentCreate,  db : Session = Depends(get_db)):
     return enrollment_service.create_enrollment(db,enrollment)
 
-@router.get("/{student_id}")
-async def get_enrollment(student_id: int , db : Session = Depends(get_db)):
-    return enrollment_service.get_by_id(db,student_id)
+@router.get("/")
+async def get_enrollment(student_id: int | None = None ,sifra_predmeta : str | None = None, datum_upisa : datetime | None = None, db : Session = Depends(get_db)):
+    return enrollment_service.get_enrollments(db, student_id, sifra_predmeta, datum_upisa)
 
 @router.put("/{student_id}/{sifra_predemta}/{datum_upisa}")
 async def update_enrollment(student_id : int, sifra_predmeta : str ,datum_upisa: datetime, enrollment : schemas.Enrollment , db : Session = Depends(get_db)):
