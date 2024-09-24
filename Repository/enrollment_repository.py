@@ -63,7 +63,7 @@ class EnrollmentRepository:
         try:
             self.db.delete(enrollment)
             self.db.commit()
-            return { "Enrollment Deleted" : True}
+            return { "Enrollment deleted" : True}
         except:
             self.db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : delete enrollment failed')

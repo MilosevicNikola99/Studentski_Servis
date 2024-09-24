@@ -6,7 +6,7 @@ from ..Services.course_services import  CourseServices, get_course_service
 
 models.Base.metadata.create_all(bind=database.engine)
 
-router = APIRouter(prefix='/courses',tags=['courses'])
+router = APIRouter(prefix='/courses',tags=['Courses'])
 
 @router.post("/")
 def create_course(course: schemas.Course ,course_services : CourseServices = Depends(get_course_service)):
