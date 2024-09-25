@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, ConfigDict
 
-
+from ..Database.models import Professor
 
 
 class StudentBase(BaseModel):
@@ -16,21 +16,8 @@ class StudentCreate(StudentBase):
 class Student(StudentBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
-class CourseBase(BaseModel):
-    naziv: str
-    espb: int
-    profesor_id: int
-class CourseCreate(CourseBase):
-    pass
-
-class Course(CourseBase):
-    sifra_predmeta : str
-
-    class Config:
-        from_attributes = True
 
 
 class ExamBase(BaseModel):
@@ -47,8 +34,7 @@ class Exam(ExamBase):
     sifra_predmeta: str
     datum: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ProfessorBase(BaseModel):
         ime: str
@@ -61,8 +47,7 @@ class ProfessorCreate(ProfessorBase):
 class Professor(ProfessorBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class EnrollmentBase(BaseModel):
     student_id: int
@@ -74,5 +59,20 @@ class EnrolmentCreate(EnrollmentBase):
 
 class Enrollment(EnrollmentBase):
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CourseBase(BaseModel):
+    naziv: str
+    espb: int
+    profesor_id: int
+
+
+class CourseCreate(CourseBase):
+    sifra_predmeta: str
+
+
+class Course(CourseCreate):
+    profesor: ProfessorBase
+
+    model_config = ConfigDict(from_attributes=True)

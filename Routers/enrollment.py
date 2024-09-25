@@ -14,7 +14,7 @@ async def create_enrollment( enrollment : schemas.EnrolmentCreate, enrollment_se
 async def get_enrollment(student_id: int | None = None ,sifra_predmeta : str | None = None, datum_upisa : datetime | None = None,enrollment_service : EnrollmentService = Depends(get_enrollment_service)):
     return enrollment_service.get_enrollments( student_id, sifra_predmeta, datum_upisa)
 
-@router.put("/{student_id}/{sifra_predemta}/{datum_upisa}")
+@router.put("/{student_id}/{sifra_predmeta}/{datum_upisa}")
 async def update_enrollment(student_id : int, sifra_predmeta : str ,datum_upisa: datetime, enrollment : schemas.Enrollment , enrollment_service : EnrollmentService = Depends(get_enrollment_service)):
     return enrollment_service.update_enrollment(student_id,sifra_predmeta,datum_upisa , enrollment)
 

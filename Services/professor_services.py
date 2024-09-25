@@ -26,6 +26,13 @@ class ProfessorService:
             raise HTTPException(status_code=404,detail="Professor not found")
         return professor
 
+    def get_professors(self, departman : str):
+        if departman:
+            professors = self.professor_repository.get_professors_by_departmen(departman)
+            if professors is None:
+                raise HTTPException(status_code=404,detail="Professor not found")
+            return professors
+        return self.professor_repository.get_all_professors()
 
     def update(self, professor : schemas.Professor):
         professor = self.professor_repository.update_professor(professor)
@@ -39,3 +46,4 @@ class ProfessorService:
         if response is None:
             raise HTTPException(status_code=404,detail="Professor not found")
         return response
+

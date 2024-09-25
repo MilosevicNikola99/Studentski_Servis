@@ -34,6 +34,11 @@ class ProfessorRepository:
     def get_professor_by_id(self, professor_id):
         return self.db.query(models.Professor).filter(models.Professor.id == professor_id).first()
 
+    def get_professors_by_departmen(self, departman):
+        return self.db.query(models.Professor).filter(models.Professor.departman == departman).all()
+
+    def get_all_professors(self):
+        return self.db.query(models.Professor).all()
 
     def update_professor(self, up_professor):
         professor = self.get_professor_by_id(up_professor.id)
@@ -62,3 +67,5 @@ class ProfessorRepository:
                 raise HTTPException(status_code=400, detail="Database error")
             return {"Professor deleted" : True}
         return None
+
+

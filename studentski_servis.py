@@ -56,7 +56,7 @@ app.include_router(professors.router)
 
 app.include_router(enrollment.router)
 
-@app.get("/statistics/{student_id}")
+@app.get("/statistics/{student_id}" ,tags=['Statistics'])
 async def statistics(student_id : int , db : Session = Depends(get_db)):
     espb = get_sum_espb_for_student(db,student_id)
     count_exams = count_passed_exams(db,student_id)

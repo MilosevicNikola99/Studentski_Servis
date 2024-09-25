@@ -12,9 +12,14 @@ router = APIRouter(prefix="/professors", tags=["Professors"])
 def create_professor(professor: schemas.ProfessorCreate ,professor_service : ProfessorService = Depends(get_professor_service)):
     return professor_service.create(professor)
 
+@router.get("/")
+def get_professors(departman : str | None = None, professor_service : ProfessorService = Depends(get_professor_service)):
+    return professor_service.get_professors(departman)
+
 @router.get("/{professor_id}")
-def get_professor(professor_id: int, professor_service : ProfessorService = Depends(get_professor_service)):
+def get_professor_by_id(professor_id: int, professor_service : ProfessorService = Depends(get_professor_service)):
     return professor_service.get_by_id(professor_id)
+
 
 @router.put("/{professor_id}")
 def update_professor(professor_id : int ,professor : schemas.ProfessorBase ,professor_service : ProfessorService = Depends(get_professor_service) ):

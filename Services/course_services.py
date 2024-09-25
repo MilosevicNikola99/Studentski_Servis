@@ -11,7 +11,7 @@ class CourseServices:
     def __init__(self,course_repository):
         self.course_repository = course_repository
 
-    def create(self, course: schemas.Course):
+    def create(self, course: schemas.CourseCreate):
         if self.course_repository.get_course_by_sifra( course.sifra_predmeta):
             raise HTTPException(status_code=400,detail="Course already exists")
         return self.course_repository.create_course( course)
@@ -22,9 +22,14 @@ class CourseServices:
             raise HTTPException(status_code=404,detail="Course not found")
         return response
 
+    def get_courses(self, profesor_id, naziv, departman):
+        courses =  self.course_repository.get_courses(profesor_id, naziv, departman)
+        if courses is None:
+            raise HTTPException(status_code=404,detail="Course not found")
+        return courses
+
     def get_by_sifra(self, sifra_predmeta : str):
-        course = self.course_repository.get_course_by_sifra( sifra_predmeta)
-        print(course)
+        course = self.course_repository.get_course_by_sifra(sifra_predmeta)
         if course is None:
             raise HTTPException(status_code=404,detail="Course not found")
         return course

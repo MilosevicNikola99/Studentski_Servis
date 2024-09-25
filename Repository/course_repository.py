@@ -1,6 +1,8 @@
 from fastapi import HTTPException,Depends
-from ..dependencies import get_db
+from sqlalchemy import select
 
+from ..dependencies import get_db
+from sqlalchemy.orm import joinedload
 from ..Database import models ,database
 from ..Schemas import schemas
 
@@ -16,6 +18,23 @@ class CourseRepository:
     def get_course_by_sifra(self, sifra_predemta:str):
         return self.db.query(models.Course).filter(sifra_predemta == models.Course.sifra_predmeta).first()
 
+    def get_courses(self,profesor_id,naziv,departman):
+        # Početni upit: selektovanje kurseva i profesora
+        stmt = select(models.Course, models.Professor).join(models.Professor, models.Course.profesor_id == models.Professor.id)
+
+        # Filtriranje na osnovu prosleđenih parametara
+        if profesor_id:
+            stmt = stmt.filter(models.Course.profesor_id == profesor_id)
+        if naziv:
+            stmt = stmt.filter(models.Course.naziv == naziv)
+        if departman:
+            stmt = stmt.filter(models.Professor.departman == departman)
+
+        # Izvrši upit i dohvati sve rezultate
+        result = self.db.execute(stmt).all()
+
+        # Vraćanje rezultata u odgovarajućem formatu
+        return [{"course": course, "professor": professor} for course, professor in result]
 
     def create_course(self, course : schemas.Course):
         db_course = models.Course(sifra_predmeta=course.sifra_predmeta,naziv=course.naziv,espb=course.espb, profesor_id=course.profesor_id)

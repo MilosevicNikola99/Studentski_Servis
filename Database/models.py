@@ -32,7 +32,7 @@ class Course(Base):
 
     exams : Mapped[List["Exam"]] = relationship("Exam", back_populates="course")
     profesor : Mapped["Professor"] = relationship("Professor", back_populates="courses")
-    enrollment = relationship("Enrollment", back_populates="course")
+    enrollment : Mapped[List["Enrollment"]] = relationship("Enrollment", back_populates="course")
 
 class Exam(Base):
     __tablename__ = 'exam'

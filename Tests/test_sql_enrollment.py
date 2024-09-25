@@ -75,22 +75,24 @@ def test_get_enrollment():
                                       "datum_upisa": "2024-09-24T10:11:35.514000"
                                 }]
 
-# def test_update_enrollment():
-#     response = client.put("/enrollments/1/P144/2024-09-24T10:11:35.514Z",
-#                           json = {
-#   "student_id": 5,
-#   "sifra_predmeta": "P120",
-#   "datum_upisa": "2024-09-16T13:57:28.963000"
-# })
-#     assert response.status_code == 200
-#     assert response.json() == {
-#                                       "student_id": 1,
-#                                       "sifra_predmeta": "P145",
-#                                       "datum_upisa": "2024-09-24T10:11:35.514000"
-#                                 }
+def test_update_enrollment():
+    response = client.put("/enrollments/1/P144/2024-09-24T10:11:35.514Z",
+                          json = {
+                                  "student_id": 5,
+                                  "sifra_predmeta": "P120",
+                                  "datum_upisa": "2024-09-16T13:57:28.963000"
+                                })
+    print("*"*100)
+    print(response.text)
+    assert response.status_code == 200
+    assert response.json() == {
+                                      "student_id":5,
+                                      "sifra_predmeta": "P120",
+                                      "datum_upisa": "2024-09-16T13:57:28.963000"
+                                }
 
 def test_delete_enrollment():
-    response = client.delete('/enrollments/1/P144/2024-09-24T10:11:35.514000')
+    response = client.delete('/enrollments/5/P120/2024-09-16T13:57:28.963000')
     assert response.status_code == 200, response.text
     assert response.json() == {"Enrollment deleted" : True}
     client.delete('/students/1')
