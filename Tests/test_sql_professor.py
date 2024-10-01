@@ -63,6 +63,7 @@ def test_get_professor():
                                   "prezime": "Maric",
                                   "departman": "Racunarstvo i informatika"
                                }
+    #Nove izmene
     assert 202==200
 
 
