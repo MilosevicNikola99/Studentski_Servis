@@ -63,7 +63,7 @@ def test_get_professor():
                                   "prezime": "Maric",
                                   "departman": "Racunarstvo i informatika"
                                }
-    assert 202==201
+
 
 
 def test_update_professor():
