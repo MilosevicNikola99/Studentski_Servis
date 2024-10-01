@@ -67,6 +67,7 @@ def test_get_exams():
     assert data["ocena"] == 6
     assert data["student_id"] == 1
     assert data["sifra_predmeta"] == "P120"
+    assert 202 == 200
 
 def test_update_exams():
     auth = client.post("/login/user", data={"grant_type": "password", "username": "admin", "password": "password"})
