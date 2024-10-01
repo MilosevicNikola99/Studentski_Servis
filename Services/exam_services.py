@@ -11,11 +11,14 @@ class ExamServices:
     def __init__(self,exam_repository):
         self.exam_repository = exam_repository
 
-    def get_exam(self, student_id, sifra_predmeta, datum):
-        exam = self.exam_repository.get_exam( student_id, sifra_predmeta, datum)
-        if exam is None:
-            raise HTTPException(status_code=404,detail="Course not found")
-        return exam
+    def get_exam(self, student_id, sifra_predmeta, datum,username: str):
+        if self.exam_repository.is_admin(username) or self.exam_repository.is_student(student_id,username) or self.exam_repository.is_professor(username):
+            exam = self.exam_repository.get_exam( student_id, sifra_predmeta, datum)
+            if exam is None:
+                raise HTTPException(status_code=404,detail="Course not found")
+            return exam
+        else:
+            raise HTTPException(status_code=401,detail="You are not authorized to get this exam")
 
 
     def create(self,  exam: schemas.ExamCreate, username : str):

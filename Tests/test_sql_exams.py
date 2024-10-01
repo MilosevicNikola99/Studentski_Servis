@@ -56,7 +56,11 @@ def test_create_exam():
 
 
 def test_get_exams():
-    response = client.get("/exams/1/P120/2024-09-18T13:02:21.702Z")
+    auth = client.post("/login/user",data={"grant_type" : "password","username": "admin", "password": "password"} )
+    assert auth.status_code == 200
+    access_token = auth.json().get("access_token")
+
+    response = client.get("/exams/1/P120/2024-09-18T13:02:21.702Z",headers= {"Authorization": f"Bearer {access_token}"})
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["datum"] == "2024-09-18T13:02:21.702000"

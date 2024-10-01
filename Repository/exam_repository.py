@@ -77,3 +77,11 @@ class ExamRepository:
         if professor:
             return True
         return False
+
+    def is_student(self, username, student_id):
+        student = self.db.query(models.UserStudent).filter(username == models.UserStudent.username,
+                                                           student_id == models.UserStudent.student_id).first()
+        if student:
+            return True
+        else:
+            return False
