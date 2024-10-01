@@ -68,4 +68,10 @@ class ProfessorRepository:
             return {"Professor deleted" : True}
         return None
 
+    def is_admin(self, username):
+        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
+        if admin:
+            return True
+        return False
+
 

@@ -61,3 +61,21 @@ class StudentRepository:
             self.db.commit()
             return {"Student deleted" : True}
         return None
+
+    def check_permission(self, student_id, username):
+        student = self.db.query(models.UserStudent).filter(username == models.UserStudent.username, student_id == models.UserStudent.student_id).first()
+        if student:
+            return True
+        professor = self.db.query(models.UserProfessor).filter(username == models.UserProfessor.username).first()
+        if professor:
+            return True
+        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
+        if admin:
+            return True
+        return False
+
+    def is_admin(self, username):
+        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
+        if admin:
+            return True
+        return False

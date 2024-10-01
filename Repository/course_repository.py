@@ -30,10 +30,8 @@ class CourseRepository:
         if departman:
             stmt = stmt.filter(models.Professor.departman == departman)
 
-        # Izvrši upit i dohvati sve rezultate
         result = self.db.execute(stmt).all()
 
-        # Vraćanje rezultata u odgovarajućem formatu
         return [{"course": course, "professor": professor} for course, professor in result]
 
     def create_course(self, course : schemas.Course):
@@ -77,3 +75,9 @@ class CourseRepository:
             self.db.refresh(course)
             return course
         return None
+
+    def is_admin(self, username):
+        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
+        if admin:
+            return True
+        return False

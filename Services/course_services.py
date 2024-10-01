@@ -11,12 +11,19 @@ class CourseServices:
     def __init__(self,course_repository):
         self.course_repository = course_repository
 
-    def create(self, course: schemas.CourseCreate):
+    def create(self, course: schemas.CourseCreate,username : str):
+        is_admin = self.course_repository.is_admin(username)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="You are not authorized to create course")
+
         if self.course_repository.get_course_by_sifra( course.sifra_predmeta):
             raise HTTPException(status_code=400,detail="Course already exists")
         return self.course_repository.create_course( course)
 
-    def delete(self, sifra_predmeta: str):
+    def delete(self, sifra_predmeta: str,username : str):
+        is_admin = self.course_repository.is_admin(username)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="You are not authorized to create course")
         response = self.course_repository.delete_course(sifra_predmeta)
         if response is None:
             raise HTTPException(status_code=404,detail="Course not found")
@@ -35,7 +42,11 @@ class CourseServices:
         return course
 
 
-    def update(self, course : schemas.Course):
+    def update(self, course : schemas.Course,username : str):
+        is_admin = self.course_repository.is_admin(username)
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="You are not authorized to create course")
+
         course = self.course_repository.update_course( course)
         if course is None:
             raise HTTPException(status_code=404,detail="Course not found")

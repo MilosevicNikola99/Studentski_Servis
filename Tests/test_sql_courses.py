@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from ..Database.database import Base
-from ..studentski_servis import app, get_db
+from ..studentski_servis import app
+from ..dependencies import get_db
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_test_app.db"
 
@@ -31,6 +32,10 @@ app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 def test_create_courses():
+    auth = client.post("/login/user",data={"grant_type" : "password","username": "admin", "password": "password"} )
+    assert auth.status_code == 200
+    access_token = auth.json().get("access_token")
+
     response = client.post(
         "/courses/",
         json={
@@ -38,7 +43,8 @@ def test_create_courses():
                 "espb": 6,
                 "profesor_id": 1,
                 "sifra_predmeta": "P120"
-        } ,
+        },
+        headers= {"Authorization": f"Bearer {access_token}"}
     )
     assert response.status_code == 200, response.text
     data = response.json()
@@ -49,6 +55,7 @@ def test_create_courses():
 
 
 def test_get_course():
+
     response = client.get("/courses/P120")
     assert response.status_code == 200, response.text
     data = response.json()
@@ -58,6 +65,7 @@ def test_get_course():
     assert data["profesor_id"] == 1
 
 def test_get_courses_by_profesor_id():
+
     response = client.get("/courses/", params={'profesor_id': 1})
     assert response.status_code == 200, response.text
     data = response.json()
@@ -74,7 +82,15 @@ def test_get_courses_by_profesor_id():
 
 
 def test_get_courses_by_naziv():
-    response = client.get("/courses/", params={'naziv': 'Programiranje1'})
+
+    auth = client.post("/login/user",data={"grant_type" : "password","username": "admin", "password": "password"} )
+    assert auth.status_code == 200
+    access_token = auth.json().get("access_token")
+
+    response = client.get("/courses/",
+                          params={'naziv': 'Programiranje1'},
+                          headers={"Authorization": f"Bearer {access_token}"}
+                          )
     assert response.status_code == 200, response.text
     data = response.json()
     assert data == [{'course':
@@ -89,7 +105,10 @@ def test_get_courses_by_naziv():
                          'id': 1}}]
 
 def test_get_courses_by_departman():
-    response = client.get("/courses/", params={'departman': 'Racunarstvo i informatika'})
+
+    response = client.get("/courses/",
+                          params={'departman': 'Racunarstvo i informatika'},
+                          )
     assert response.status_code == 200, response.text
     data = response.json()
     assert data == [{'course':
@@ -104,12 +123,20 @@ def test_get_courses_by_departman():
                          'id': 1}}]
 
 def test_update_courses():
-    response = client.put("/courses/P120", json={
-                "naziv": "Programiranje2",
-                "espb": 6,
-                "profesor_id": 1,
-                "sifra_predmeta": "P121"
-        } )
+
+    auth = client.post("/login/user",data={"grant_type" : "password","username": "admin", "password": "password"} )
+    assert auth.status_code == 200
+    access_token = auth.json().get("access_token")
+
+    response = client.put("/courses/P120",
+                          json={
+                                "naziv": "Programiranje2",
+                                "espb": 6,
+                                "profesor_id": 1,
+                                "sifra_predmeta": "P121"
+                          },
+                          headers={"Authorization": f"Bearer {access_token}"}
+                          )
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["naziv"] == "Programiranje2"
@@ -118,7 +145,14 @@ def test_update_courses():
     assert data["profesor_id"] == 1
 
 def test_delete_course():
-    response = client.delete("/courses/P120")
+
+    auth = client.post("/login/user",data={"grant_type" : "password","username": "admin", "password": "password"} )
+    assert auth.status_code == 200
+    access_token = auth.json().get("access_token")
+
+    response = client.delete("/courses/P120" ,
+                             headers={"Authorization": f"Bearer {access_token}"}
+                             )
     assert response.status_code == 200, response.text
     data = response.json()
     assert data == {"Course deleted" : True}
