@@ -65,3 +65,15 @@ class ExamRepository:
             self.db.refresh(exam)
             return exam
         return None
+
+    def is_admin(self, username):
+        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
+        if admin:
+            return True
+        return False
+
+    def is_professor(self, username):
+        professor = self.db.query(models.UserProfessor).filter(username == models.UserProfessor.username).first()
+        if professor:
+            return True
+        return False

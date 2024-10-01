@@ -67,3 +67,17 @@ class EnrollmentRepository:
         except:
             self.db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : delete enrollment failed')
+
+    def is_admin(self, username):
+        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
+        if admin:
+            return True
+        return False
+
+    def is_student(self, username, student_id):
+        student = self.db.query(models.UserStudent).filter(username == models.UserStudent.username,
+                                                           student_id == models.UserStudent.student_id).first()
+        if student:
+            return True
+        else:
+            return False

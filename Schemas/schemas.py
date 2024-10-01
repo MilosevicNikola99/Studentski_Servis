@@ -76,3 +76,41 @@ class Course(CourseCreate):
     profesor: ProfessorBase
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserStudentBase(BaseModel):
+    username: str
+    student_id: int
+
+class UserStudentCreate(UserStudentBase):
+    pass
+
+class UserStudent(UserStudentBase):
+    id : int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UserProfessorBase(BaseModel):
+    username: str
+    professor_id: int
+
+class UserProfessorCreate(UserProfessorBase):
+    pass
+
+class UserProfessor(UserProfessorBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class Admin(BaseModel):
+    id: int
+    username: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class User(BaseModel):
+    id: int
+    username: str
+    hashed_password: str
+
+    model_config = ConfigDict(from_attributes=True)
