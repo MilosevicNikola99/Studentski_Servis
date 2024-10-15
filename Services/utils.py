@@ -1,7 +1,10 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
+
+from fastapi.security import OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login/user")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -30,3 +33,7 @@ def verify_access_token(token: str) -> dict:
         raise HTTPException(
             status_code=401, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"}
         )
+
+def verify_user(token : str = Depends(oauth2_scheme)) -> dict:
+    user_data = verify_access_token(token)
+    return user_data

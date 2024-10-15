@@ -1,81 +1,74 @@
 from fastapi import HTTPException
 from fastapi import Depends
 from ..dependencies import get_db
-from ..Database import database
+
 from ..Database import models
 from ..Schemas import schemas
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
-def get_student_repository(db: database.SessionLocal = Depends(get_db)):
+def get_student_repository(db: AsyncSession = Depends(get_db)):
     return StudentRepository(db)
 
 class StudentRepository:
 
-    def __init__(self,db):
+    def __init__(self,db : AsyncSession):
         self.db = db
 
-    def create_student(self,student : schemas.StudentCreate):
-        db_student = models.Student(ime=student.ime,prezime=student.prezime,indeks=student.indeks)
+    async def create_student(self,student : schemas.StudentCreate):
+        db_student = models.Student(ime=student.ime,prezime=student.prezime,indeks=student.indeks,user_id = student.user_id)
         try:
             self.db.add(db_student)
-            self.db.commit()
+            await self.db.commit()
         except:
-            self.db.rollback()
+            await self.db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : create student failed')
 
-        self.db.refresh(db_student)
+        await self.db.refresh(db_student)
         return db_student
 
-    def get_student_by_id(self, student_id : int):
-        return self.db.query(models.Student).filter(student_id == models.Student.id).first()
+    async def get_student_by_id(self, student_id : int):
+        stmt = select(models.Student).filter(models.Student.id == student_id)
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
 
 
-    def get_student_by_indeks(self, indeks : str):
-        return self.db.query(models.Student).filter(indeks == models.Student.indeks).first()
+    async def get_student_by_indeks(self, indeks : str):
+        stmt = select(models.Student).filter(models.Student.indeks == indeks)
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
 
-    def update_student(self,up_student : schemas.Student):
-        student = self.db.query(models.Student).filter(up_student.id == models.Student.id).first()
+    async def update_student(self,up_student : schemas.Student):
+        stmt = select(models.Student).filter(models.Student.id == up_student.id)
+        result = await self.db.execute(stmt)
+        student = result.scalar_one_or_none()
         if student:
             try:
                 student.ime = up_student.ime
                 student.prezime = up_student.prezime
                 student.indeks = up_student.indeks
-                self.db.commit()
+                await self.db.commit()
             except:
-                self.db.rollback()
-                raise HTTPException(status_code=400, detail='Database Error : update student failed')
+                await self.db.rollback()
+                raise HTTPException(status_code=400, detail='Database Error: update student failed')
 
-            self.db.refresh(student)
+            await self.db.refresh(student)
             return student
         return None
 
 
-    def delete_student(self, student_id : int):
-        student = self.db.query(models.Student).filter(student_id == models.Student.id).first()
+    async def delete_student(self, student_id : int):
+        stmt = select(models.Student).filter(models.Student.id == student_id)
+        result = await self.db.execute(stmt)
+        student = result.scalar_one_or_none()
         if student:
             try:
-                self.db.delete(student)
-                self.db.commit()
+                await self.db.delete(student)
+                await self.db.commit()
             except:
-                self.db.rollback()
-                raise HTTPException(status_code=400, detail='Database Error : delete student failed')
-            self.db.commit()
-            return {"Student deleted" : True}
+                await self.db.rollback()
+                raise HTTPException(status_code=400, detail='Database Error: delete student failed')
+            return {"Student deleted": True}
         return None
 
-    def check_permission(self, student_id, username):
-        student = self.db.query(models.UserStudent).filter(username == models.UserStudent.username, student_id == models.UserStudent.student_id).first()
-        if student:
-            return True
-        professor = self.db.query(models.UserProfessor).filter(username == models.UserProfessor.username).first()
-        if professor:
-            return True
-        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
-        if admin:
-            return True
-        return False
 
-    def is_admin(self, username):
-        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
-        if admin:
-            return True
-        return False

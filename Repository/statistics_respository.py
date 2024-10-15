@@ -1,22 +1,23 @@
 from fastapi import Depends
 from ..dependencies import get_db
-from ..Database import database
+from ..decorators import measure_time
 from ..Database import models
 from sqlalchemy  import select
 from sqlalchemy import func , join
 from sqlalchemy.sql import and_
+from sqlalchemy.ext.asyncio import AsyncSession
+import time
 
-
-
-def get_statistics_repository(db: database.SessionLocal = Depends(get_db)):
+def get_statistics_repository(db: AsyncSession = Depends(get_db)):
     return StatisticsRepository(db)
 
 class StatisticsRepository:
 
-    def __init__(self,db):
+    def __init__(self,db : AsyncSession):
         self.db = db
 
-    def get_sum_espb_for_student(self, student_id: int) -> int:
+    @measure_time
+    async def get_sum_espb_for_student(self, student_id: int) -> int:
         stmt = (
             select(func.sum(models.Course.espb))
             .select_from(
@@ -30,11 +31,11 @@ class StatisticsRepository:
             )
         )
 
-        result = self.db.execute(stmt).scalar()
+        result = await self.db.execute(stmt)
 
-        return result
+        return result.scalar()
 
-    def count_passed_exams(self, student_id: int):
+    async def count_passed_exams(self, student_id: int):
         stmt = (
             select(func.count())
             .select_from(
@@ -48,19 +49,9 @@ class StatisticsRepository:
             )
         )
 
-        result = self.db.execute(stmt).scalar()
+        result = await  self.db.execute(stmt)
 
-        return result
+        return result.scalar()
 
-    def check_permission(self, student_id, username):
-        student = self.db.query(models.UserStudent).filter(username == models.UserStudent.username, student_id == models.UserStudent.student_id).first()
-        if student:
-            return True
-        professor = self.db.query(models.UserProfessor).filter(username == models.UserProfessor.username).first()
-        if professor:
-            return True
-        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
-        if admin:
-            return True
-        return False
+
 

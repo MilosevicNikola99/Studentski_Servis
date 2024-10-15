@@ -1,83 +1,93 @@
 from datetime import datetime
 from fastapi import HTTPException, Depends
-
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..dependencies import get_db
-from ..Database import models, database
+from ..Database import models
 from ..Schemas import schemas
 
-def get_enrollment_repository(db: database.SessionLocal = Depends(get_db)):
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+
+def get_enrollment_repository(db: AsyncSession = Depends(get_db)):
     return EnrollmentRepository(db)
 
 class EnrollmentRepository:
 
-    def __init__(self , db ):
+    def __init__(self , db : AsyncSession):
         self.db = db
 
-    def get_enrollments_by_id(self, id : int):
-        return self.db.query(models.Enrollment).filter(id == models.Enrollment.student_id).all()
+    async def get_enrollments_by_id(self, student_id : int):
+        result = await self.db.execute(select(models.Enrollment).filter(models.Enrollment.student_id == student_id))
+        enrollments = result.fetchone()
+        return enrollments
 
-    def get_enrollments_by_sifra(self, sifra_predmeta : str):
-        return self.db.query(models.Enrollment).filter(sifra_predmeta == models.Enrollment.sifra_predmeta).all()
+    async def get_enrollments_by_sifra(self, sifra_predmeta : str):
+        result = await self.db.execute(select(models.Enrollment).filter(models.Enrollment.sifra_predmeta == sifra_predmeta))
+        enrollments = result.fetchall()
+        return enrollments
 
+    async def get_enrollments_by_datum_upisa(self, datum_upisa : datetime):
+        result = await self.db.execute(select( models.Enrollment).filter(models.Enrollment.datum_upisa == datum_upisa))
+        enrollments = result.fetchall()
+        return enrollments
 
-    def get_enrollments_by_datum_upisa(self, datum_upisa : datetime):
-        return self.db.query(models.Enrollment).filter(datum_upisa == models.Enrollment.datum_upisa).all()
+    async def get_enrollment(self, student_id : int, sifra_predmeta : str, datum_upisa : datetime):
+        result = await self.db.execute(select(models.Enrollment).filter(models.Enrollment.student_id == student_id,
+                                                                        models.Enrollment.sifra_predmeta == sifra_predmeta,
+                                                                        models.Enrollment.datum_upisa == datum_upisa))
+        enrollments = result.fetchall()
+        return enrollments
 
-    def get_enrollment(self, student_id : int, sifra_predmeta : str, datum_upisa : datetime):
-        return self.db.query(models.Enrollment).filter(student_id == models.Enrollment.student_id,
-                                                  sifra_predmeta == models.Enrollment.sifra_predmeta,
-                                                  datum_upisa == models.Enrollment.datum_upisa).first()
+    async def get_enrollments(self):
 
-    def get_enrollments(self):
-        return self.db.query(models.Enrollment).all()
+        result = await self.db.execute(select(models.Enrollment))
+        enrollments = result.scalars().all()
+        return enrollments
 
-    def create_enrollment(self, enrollment : schemas.EnrolmentCreate):
+    async def create_enrollment(self, enrollment : schemas.EnrolmentCreate):
         db_enrollment = models.Enrollment(student_id = enrollment.student_id,sifra_predmeta = enrollment.sifra_predmeta,datum_upisa = enrollment.datum_upisa)
         try:
             self.db.add(db_enrollment)
-            self.db.commit()
+            await self.db.commit()
         except:
-            self.db.rollback()
+            await self.db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : create enrollment failed')
-
-        self.db.refresh(db_enrollment)
+        await self.db.refresh(db_enrollment)
         return db_enrollment
 
 
-    def update_enrollment(self, enrollment, up_enrollment):
+    async def update_enrollment(self,student_id,sifra_predmeta,datum_upisa, up_enrollment):
+        enrollment_result = await self.db.execute(select(models.Enrollment).filter(models.Enrollment.student_id == student_id,
+                                                                        models.Enrollment.sifra_predmeta == sifra_predmeta,
+                                                                        models.Enrollment.datum_upisa == datum_upisa))
+        enrollment = enrollment_result.scalars().first()
         try:
             enrollment.student_id = up_enrollment.student_id
             enrollment.sifra_predmeta = up_enrollment.sifra_predmeta
             enrollment.datum_upisa = up_enrollment.datum_upisa
-            self.db.commit()
+            await self.db.commit()
         except:
-            self.db.rollback()
+            await self.db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : update enrollment failed')
-
-        self.db.refresh(enrollment)
+        await self.db.refresh(enrollment)
         return enrollment
 
 
-    def delete_enrollment(self, enrollment):
+    async def delete_enrollment(self, student_id, sifra_predmeta, datum_upisa):
+        enrollment_result = await self.db.execute(
+            select(models.Enrollment).filter(models.Enrollment.student_id == student_id,
+                                             models.Enrollment.sifra_predmeta == sifra_predmeta,
+                                             models.Enrollment.datum_upisa == datum_upisa))
+        enrollment = enrollment_result.scalars().first()
         try:
-            self.db.delete(enrollment)
-            self.db.commit()
+            await self.db.delete(enrollment)
+            await self.db.commit()
             return { "Enrollment deleted" : True}
         except:
-            self.db.rollback()
+            await self.db.rollback()
             raise HTTPException(status_code=400, detail='Database Error : delete enrollment failed')
 
-    def is_admin(self, username):
-        admin = self.db.query(models.Admin).filter(username == models.Admin.username).first()
-        if admin:
-            return True
-        return False
-
-    def is_student(self, username, student_id):
-        student = self.db.query(models.UserStudent).filter(username == models.UserStudent.username,
-                                                           student_id == models.UserStudent.student_id).first()
-        if student:
-            return True
-        else:
-            return False

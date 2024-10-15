@@ -10,8 +10,8 @@ router = APIRouter(prefix="/login")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login/user")
 
 @router.post("/user")
-def login_user(form_data: OAuth2PasswordRequestForm = Depends(),login_service : LoginService = Depends(get_logging_service)):
-    user = login_service.authenticate_user(form_data.username, form_data.password)
+async def login_user(form_data: OAuth2PasswordRequestForm = Depends(),login_service : LoginService = Depends(get_logging_service)):
+    user = await login_service.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Invalid username or password")
 

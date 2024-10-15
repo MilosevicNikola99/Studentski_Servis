@@ -1,8 +1,9 @@
-from fastapi import FastAPI ,Depends
+from fastapi import FastAPI
 
 from fastapi.security import OAuth2PasswordBearer
+from .Database.database import init_db
+from .Routers import students, logging, professors, exams,courses , enrollment, statistics
 
-from .Routers import exams,students,courses,professors,enrollment,statistics,logging
 
 
 app = FastAPI()
@@ -17,5 +18,8 @@ app.include_router(enrollment.router)
 app.include_router(statistics.router)
 app.include_router(logging.router)
 
+#app.add_event_handler("startup", init_db)
 
-
+# @app.on_event("startup")
+# async def startup():
+#     await init_db()
