@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="sql_app" uuid="d3691108-0a36-4fa1-a00c-da5f9c68a444">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="studentski_servis@localhost" uuid="7d463623-641c-461f-a2bc-b2d7a16ecd33">
+      <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\nikola.milosevic\Studentski_Servis\sql_app.db</jdbc-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/studentski_servis</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="sql_test_app" uuid="9e6b33ab-2116-46ec-a2de-9f1e2789fe24">
+    <data-source source="LOCAL" name="sql_test_app" uuid="195968bf-55b5-409e-a06c-2c2108bf8884">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>

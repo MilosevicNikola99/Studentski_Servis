@@ -1,8 +1,9 @@
 from datetime import datetime
+from typing import Optional
 
-from pydantic import BaseModel, conint, ConfigDict
+from pydantic import BaseModel, conint, ConfigDict ,Field
 
-from ..Database.models import Professor
+
 
 
 class StudentBase(BaseModel):
@@ -11,10 +12,10 @@ class StudentBase(BaseModel):
     indeks : str
 
 class StudentCreate(StudentBase):
-    pass
+    user_id : int
 
 class Student(StudentBase):
-    id: int
+    id: int = Field(..., ge=1, le=10000)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -26,11 +27,11 @@ class ExamBase(BaseModel):
     polozen: bool
 
 class ExamCreate(ExamBase):
-    student_id: int
+    student_id: int = Field(..., ge=1, le=10000)
     sifra_predmeta: str
 
 class Exam(ExamBase):
-    student_id: int
+    student_id: int = Field(..., ge=1, le=10000)
     sifra_predmeta: str
     datum: datetime
 
@@ -42,15 +43,15 @@ class ProfessorBase(BaseModel):
         departman: str
 
 class ProfessorCreate(ProfessorBase):
-    pass
+    user_id : int
 
 class Professor(ProfessorBase):
-    id: int
+    id: int = Field(..., ge=1, le=10000)
 
     model_config = ConfigDict(from_attributes=True)
 
 class EnrollmentBase(BaseModel):
-    student_id: int
+    student_id: int = Field(..., ge=1, le=10000)
     sifra_predmeta: str
     datum_upisa: datetime
 
@@ -73,6 +74,44 @@ class CourseCreate(CourseBase):
 
 
 class Course(CourseCreate):
-    profesor: ProfessorBase
+
+    profesor: Optional[ProfessorBase]
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserStudentBase(BaseModel):
+    username: str
+    student_id: int
+
+class UserStudentCreate(UserStudentBase):
+    pass
+
+class UserStudent(UserStudentBase):
+    id : int = Field(..., ge=1, le=10000)
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UserProfessorBase(BaseModel):
+    username: str
+    professor_id: int
+
+class UserProfessorCreate(UserProfessorBase):
+    pass
+
+class UserProfessor(UserProfessorBase):
+    id: int = Field(..., ge=1, le=10000)
+
+    model_config = ConfigDict(from_attributes=True)
+
+class Admin(BaseModel):
+    id: int = Field(..., ge=1, le=10000)
+    username: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class User(BaseModel):
+    id: int = Field(..., ge=1, le=10000)
+    username: str
+    hashed_password: str
 
     model_config = ConfigDict(from_attributes=True)

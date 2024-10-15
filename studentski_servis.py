@@ -1,64 +1,25 @@
-from fastapi import FastAPI ,Depends
-from sqlalchemy  import select
-from sqlalchemy.orm import Session
-from sqlalchemy import func , join
-from sqlalchemy.sql import and_
+from fastapi import FastAPI
+
+from fastapi.security import OAuth2PasswordBearer
+from .Database.database import init_db
+from .Routers import students, logging, professors, exams,courses , enrollment, statistics
 
 
-from .Routers import exams,students,courses,professors,enrollment
-
-from .Database import  models
-from .dependencies import get_db
 
 app = FastAPI()
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-
-def get_sum_espb_for_student(db: Session, student_id: int) -> int:
-    stmt = (
-        select(func.sum(models.Course.espb))
-        .select_from(
-            join(models.Exam, models.Course, models.Exam.sifra_predmeta == models.Course.sifra_predmeta)
-        )
-        .where(
-            and_(
-                models.Exam.student_id == student_id,
-                models.Exam.polozen == True
-            )
-        )
-    )
-
-    result = db.execute(stmt).scalar()
-
-    return result or 0
-
-def count_passed_exams(db: Session, student_id: int):
-    stmt = (
-        select(func.count())
-        .select_from(
-            join(models.Exam, models.Course, models.Exam.sifra_predmeta == models.Course.sifra_predmeta)
-        )
-        .where(
-            and_(
-                models.Exam.student_id == student_id,
-                models.Exam.polozen == True
-            )
-        )
-    )
-
-    result = db.execute(stmt).scalar()
-
-    return result or 0
 app.include_router(exams.router)
 app.include_router(students.router)
 app.include_router(courses.router)
 app.include_router(professors.router)
-
 app.include_router(enrollment.router)
+app.include_router(statistics.router)
+app.include_router(logging.router)
 
-@app.get("/statistics/{student_id}" ,tags=['Statistics'])
-async def statistics(student_id : int , db : Session = Depends(get_db)):
-    espb = get_sum_espb_for_student(db,student_id)
-    count_exams = count_passed_exams(db,student_id)
-    return { "ESPB" : espb, "Polozio" :count_exams }
+#app.add_event_handler("startup", init_db)
 
+# @app.on_event("startup")
+# async def startup():
+#     await init_db()
