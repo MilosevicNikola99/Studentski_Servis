@@ -5,7 +5,7 @@ from ..Schemas import schemas
 from ..Services.utils import verify_user
 
 
-#models.Base.metadata.create_all(bind=database.engine)
+
 router = APIRouter(prefix='/students', tags=['Students'])
 
 
