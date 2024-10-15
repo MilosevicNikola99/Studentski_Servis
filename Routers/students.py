@@ -17,7 +17,6 @@ async def create_student(student: schemas.StudentCreate ,student_service : Stude
 async def get_student_by_id(student_id:int,student_service : StudentService = Depends(get_student_service),user_data = Depends(verify_user)):
     return await student_service.get_by_id(student_id,user_data["sub"])
 
-
 @router.put("/{student_id}",response_model=schemas.Student)
 async def update_student(student_id : int, student: schemas.StudentBase,student_service : StudentService = Depends(get_student_service),user_data = Depends(verify_user)):
     return await student_service.update(schemas.Student(id = student_id,**student.model_dump()),user_data["sub"])
